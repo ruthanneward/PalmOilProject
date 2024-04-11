@@ -167,7 +167,10 @@ Export.image.toDrive({
 
 ```
 
-This code exports two products. One of them is forest/nonforest 2001. The other is forest loss for every year from 2001 - 2022. The forest/nonforest 2011 product was downloaded in 18 seperate .tif images becuase of its size. In ArcPro the images were then mosaiced into one raster image. 
+This code exports two products. One of them is forest/nonforest 2001. The other is forest loss for every year from 2001 - 2022. The forest/nonforest 2011 product was downloaded in 18 seperate .tif images becuase of its size. In ArcPro the images were then mosaiced into one raster image. The forest loss producet was downloaded in 6 seperate .tif images and mosaiced into one raster image. A visualization of the two products is:
+
+![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/9d98ee81-3b9e-4403-89d3-d06bfcf28463)
+
 
 
 **References**
