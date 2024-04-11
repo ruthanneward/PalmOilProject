@@ -25,7 +25,6 @@ Vector:
 Raster: 
 1. Hansen forest/non forest at 2001
 2. Hansen forest loss from 2001 - 2022
-3. 
 
 
 **Data Preprocessing**
