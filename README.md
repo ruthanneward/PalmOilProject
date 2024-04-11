@@ -18,8 +18,9 @@ Assess the social, economic, and environmental impacts of Palm Oil Plantations i
 Vector: 
 1. Industrial palm oil plantations 2019
 2. Smallholder palm oil plantations 2019
-3. Number of poor people per province 2019
-4. 
+3. Number of people aged 16 - 18 not in school 2015
+4. Percentage of people in the poorest 30% between the ages of 15 and 60 that are employed 2015
+5. Number of households without electricity 2015
 
 Raster: 
 1. Hansen forest/non forest at 2001
@@ -72,12 +73,24 @@ After downloading the .tif image through GEE, it was opened in ArcPro. The raste
 
 ![palmoil](https://github.com/ruthanneward/PalmOilProject/assets/98286245/54c624e4-a706-4a73-a24c-9eb347d61b9a)
 
-Number of Poor People per Province: 
+Number of people aged 16 - 18 not in school:
 
-This dataset is sourced from the Central Bureau of Statistics from a project titled Development of Several Main Socio-Economic Indicators of Indonesia August 2019 edition. This data was accessed through ArcGIS online. The data looks like this: 
+This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
 
-![poverty](https://github.com/ruthanneward/PalmOilProject/assets/98286245/cd8b31fb-be1f-47cd-9656-ca350915c9b6)
+![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/2e234b82-69e1-459d-92d2-fda012578816)
 
+
+Percentage of people in the poorest 30% between the ages of 15 and 60 that are employed: 
+
+This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
+
+![employed](https://github.com/ruthanneward/PalmOilProject/assets/98286245/ced521b9-a744-4577-8fdb-56f2f5f825b0)
+
+Number of households without electricity 2015:
+
+This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
+
+![electricity](https://github.com/ruthanneward/PalmOilProject/assets/98286245/cff78dc8-4b6a-499f-94ba-2ad4d508b6f4)
 
 Hansen Forest Loss: 
 
@@ -154,7 +167,7 @@ Export.image.toDrive({
 
 ```
 
-Two .tif images were downloaded. One of them is forest/nonforest at 2001. Another is forest loss for every year between 2001 - 2022. The final product looks like this: 
+This code exports two products. One of them is forest/nonforest 2001. The other is forest loss for every year from 2001 - 2022. The forest/nonforest 2011 product was downloaded in 18 seperate .tif images becuase of its size. In ArcPro the images were then mosaiced into one raster image. 
 
 
 **References**
