@@ -170,6 +170,37 @@ This code exports two products. One of them is forest/nonforest 2001. The other 
 
 ![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/9d98ee81-3b9e-4403-89d3-d06bfcf28463)
 
+### Assignment 2
+
+**Inport Data into Postgres**
+The data was inported through the command prompt using the following code: 
+
+```
+# SHAPEFILE .SQL FILE CREATION
+
+# Create .sql file for ages 16-18 not in school shp
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\count_16_18_not_in_school.shp" public.not_in_school > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\not_in_school.sql"
+
+# Create .sql file for households without electricity shp
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\count_households_without_electricity.shp" public.households_without_electricity > "C:\Users\rutha\OneDrive - Clark University\Documen
+ts\SpatialDatabase\PalmOilProject\sql_data_inport_files\households_without_electricity.sql"
+
+# Create .sql file for percentage of people employed in the poorest 30%
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\percentage_of_employed_ppl_in_the_poorest_30%.shp" public.percentage_employed_poorest_30% > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\percentage_employed_poorest_30%.sql"
+
+# Create .sql file for smallholder palm oil plantations shp
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\smallholder_palmoil_vector.shp" public.smallholder_palmoil > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\Pa
+lmOilProject\sql_data_inport_files\smallholder_palmoil.sql"
+
+# Create .sql file for industrial palmoil plantations shp
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\industrial_pa
+lmoil_vector.shp" public.industrial_palmoil > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\Palm
+OilProject\sql_data_inport_files\industrial_palmoil.sql"
+
+# RASTER .SQL FILE CREATION
+
+# Create .sql file for forest/nonforest 2001 tif
+```
 
 
 **References**
