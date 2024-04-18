@@ -283,6 +283,26 @@ INSERT INTO employed_in_poverty_clean (gid, province, percentage_employed, geom)
 SELECT gid, provinsi, MEAN_Per_1, geom
 FROM percentage_employed_poorest_30;
 ```
+**Household Electricity Table**
+![household electricity](https://github.com/ruthanneward/PalmOilProject/assets/98286245/01b4f36d-d938-4394-857c-bdf01604049f)
+
+**School Attendance**
+![school Attendance](https://github.com/ruthanneward/PalmOilProject/assets/98286245/14e9e398-229e-4371-b7c4-48fcde513b04)
+
+**Employed in Poverty**
+![employed in poverty](https://github.com/ruthanneward/PalmOilProject/assets/98286245/2f859b01-98b9-44a1-9ad1-a987d9ff15ee)
+
+**Industrial Palm Oil**
+![industrial palm oil](https://github.com/ruthanneward/PalmOilProject/assets/98286245/a158d722-b73f-499a-9de1-17b3c4b61d7b)
+
+**Smallholder Palm Oil**
+![smallholder palm oil](https://github.com/ruthanneward/PalmOilProject/assets/98286245/9c0f2897-6fb8-475f-86b5-c2eb67c4422f)
+
+
+**Why Normalization?**
+Normalization is an important pre-analysis step in any database managment case. Normalization is preformed to prevent redundanct in data, simplyfy table structure, maintain consisten relationships between tables and faciliate easy editing and maintenance of tables. 
+
+All of the tables above satisfy first normal form becuase there are no repeating columns of values. All of the tables satisfy second normal form becuase they are already in 1NF, there are no partial dependencies, meaning that all attributes depend on the primary key. The tables satisfies third normal for becuase it satisfies 2NF and there are no transitive dependencies. All of the tables satisfy fourth normal form becuase it satisfies 3NF and there are no multi-valued dependencies. 
 
 
 
