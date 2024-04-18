@@ -193,15 +193,14 @@ C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Pers
 lmOilProject\sql_data_inport_files\smallholder_palmoil.sql"
 
 # Create .sql file for industrial palmoil plantations shp
-C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\industrial_pa
-lmoil_vector.shp" public.industrial_palmoil > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\Palm
-OilProject\sql_data_inport_files\industrial_palmoil.sql"
+C:\Program Files\PostgreSQL\16\bin> 
 
 # RASTER .SQL FILE CREATION
 
 # Create .sql file for forest/nonforest 2001 tif
-```
 
+```
+The raster data had to be inported in chunks due to the large size of the files. 
 
 **References**
 
