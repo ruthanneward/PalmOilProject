@@ -1,6 +1,6 @@
 # Mapping the Impacts of Palm Oil Plantations in Indonesia
 ## Author: Ruthanne Ward
-## Last Updated: April 11, 2024
+## Last Updated: April 18, 2024
 
 **Introduction**
 
@@ -177,6 +177,8 @@ The data was inported through the command prompt using the following code:
 
 ```
 # SHAPEFILE .SQL FILE CREATION
+-- -s flag specifies the spatial reference of the source file
+-- -I flag creates an index which speeds up sptial querying
 
 # Create .sql file for ages 16-18 not in school shp
 C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\count_16_18_not_in_school.shp" public.not_in_school > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\not_in_school.sql"
@@ -186,7 +188,7 @@ C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Pers
 ts\SpatialDatabase\PalmOilProject\sql_data_inport_files\households_without_electricity.sql"
 
 # Create .sql file for percentage of people employed in the poorest 30%
-C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\percentage_of_employed_ppl_in_the_poorest_30%.shp" public.percentage_employed_poorest_30% > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\percentage_employed_poorest_30%.sql"
+C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\percentage_of_employed_ppl_in_the_poorest_30%.shp" public.percentage_employed_poorest_30 > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\percentage_employed_poorest_30.sql"
 
 # Create .sql file for smallholder palm oil plantations shp
 C:\Program Files\PostgreSQL\16\bin> shp2pgsql -s 4326 -I "Y:\GEOG382-01-S24\Personal\ruward\PalmOilProject\smallholder_palmoil_vector.shp" public.smallholder_palmoil > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\Pa
@@ -196,11 +198,94 @@ lmOilProject\sql_data_inport_files\smallholder_palmoil.sql"
 C:\Program Files\PostgreSQL\16\bin> 
 
 # RASTER .SQL FILE CREATION
+-- -s flag specifies the spatial reference of the source file
+-- -I flag creates an index on the raster column which speeds up spatial querying
+-- -C flag adds raster contraints to use that the data is imported in the correct format
+-- -M flag vacuum analyze the raster file after loading
 
 # Create .sql file for forest/nonforest 2001 tif
 
+# IMPORT SQL FILES USING COMMAND PROMPT
+-- -U connects to the database as a specific user
+-- -d points to the destiniation database
+-- -f points to the .sql file to be imported
+
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\percentage_employed_poorest_30%.sql"
+
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\not_in_school.sql"
+
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\smallholder_palmoil.sql"
+
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\industrial_palmoil.sql"
+
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\households_without_electricity.sql"
 ```
 The raster data had to be inported in chunks due to the large size of the files. 
+
+**Normalize Tables**
+
+The tables were normalized by creating new tables and inporting the necessary data into them. 
+
+```
+-- NORMLALIZE TABLES 
+
+-- Create three new tables and populate them with columns relevent to our analysis. The smallholder_palmoil and industrial_palmoil tables can remain the same becuase they only have relevant information. 
+
+-- Households without electricity
+
+-- create empty table with same (or new if desired) column names from the source table
+CREATE TABLE household_electricity_clean(
+gid int PRIMARY KEY,
+province character varying (30),
+with_electricity numeric,
+without_electricity numeric,
+geom GEOMETRY
+);
+
+-- populate the new table with columns
+INSERT INTO household_electricity_clean(gid, province, with_electricity, without_electricity, geom)
+SELECT gid, provinsi, SUM_Electr, SUM_Withou, geom
+FROM households_without_electricity;
+
+SELECT * FROM household_electricity_clean
+
+--------------------------------------
+
+-- Teen School Attendence
+-- create empty table with same (or new if desired) column names from the source table
+CREATE TABLE school_attendance_clean(
+    gid int PRIMARY KEY,
+    province character varying (30),
+    sum_ages_16_18_not_in_school numeric,
+    geom GEOMETRY
+);
+
+-- populate the new table with columns
+INSERT INTO school_attendance_clean(gid, province, sum_ages_16_18_not_in_school, geom)
+SELECT gid, provinsi, SUM_Juml_5, geom
+FROM not_in_school;
+
+SELECT * FROM school_attendance_clean
+
+---------------------
+
+-- Percentage employed of the poorest 30%
+-- create empty table with same (or new if desired) column names from the source table
+CREATE TABLE employed_in_poverty_clean(
+    gid int PRIMARY KEY,
+    province character varying (30),
+    percentage_employed numeric,
+    geom GEOMETRY
+);
+
+-- populate the new table with columns
+INSERT INTO employed_in_poverty_clean (gid, province, percentage_employed, geom)
+SELECT gid, provinsi, MEAN_Per_1, geom
+FROM percentage_employed_poorest_30;
+```
+
+
+
 
 **References**
 
