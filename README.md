@@ -1,6 +1,6 @@
 # Mapping the Impacts of Palm Oil Plantations in Indonesia
 ## Author: Ruthanne Ward
-## Last Updated: April 18, 2024
+## Last Updated: April 24, 2024
 
 **Introduction**
 
@@ -307,15 +307,161 @@ FROM percentage_employed_poorest_30;
 ![smallholder palm oil](https://github.com/ruthanneward/PalmOilProject/assets/98286245/9c0f2897-6fb8-475f-86b5-c2eb67c4422f)
 
 
-
-
-
-
 **Why Normalization?**
 
 Normalization is an important pre-analysis step in any database managment case. Normalization is preformed to prevent redundanct in data, simplyfy table structure, maintain consisten relationships between tables and faciliate easy editing and maintenance of tables. 
 
 All of the tables above satisfy first normal form becuase there are no repeating columns of values. All of the tables satisfy second normal form becuase they are already in 1NF, there are no partial dependencies, meaning that all attributes depend on the primary key. The tables satisfies third normal for becuase it satisfies 2NF and there are no transitive dependencies. All of the tables satisfy fourth normal form becuase it satisfies 3NF and there are no multi-valued dependencies. 
+
+
+
+### Assignment 3
+
+The following spatial queries were used in SQL: 
+
+```
+-- CREATE NEW TABLE THAT INCLUDES # OF PLANTATIONS PER PROVINCE
+
+-- Create a new table to store the desired values
+CREATE TABLE economic_variables (
+	gid INT PRIMARY KEY,
+	province character varying (30),
+	number_of_planations numeric,
+ number_of_smallholder_plantations numeric
+);
+
+-- Insert gid and province into economic_variables table
+INSERT INTO economic_variables(gid, province)
+SELECT gid, province
+FROM school_attendance_clean;
+
+-- Calculate number of smallholder plantations that are in each province 
+UPDATE economic_variables AS ev
+SET number_of_smallholder_plantations = 
+(
+    SELECT COUNT(*) 
+    FROM smallholder_palmoil AS sp 
+    JOIN household_electricity_clean AS he 
+    ON ST_Contains(he.geom, sp.geom) 
+    WHERE he.province = ev.province
+);
+
+-- Calculate number of industrial plantations that are in each province 
+UPDATE economic_variables AS ev
+SET number_of_planations = 
+(
+    SELECT COUNT(*) 
+    FROM industrial_palmoil AS ip 
+    JOIN household_electricity_clean AS he 
+    ON ST_Contains(he.geom, ip.geom) 
+    WHERE he.province = ev.province
+);
+
+-- FIND HOW MANY PIXELS OF FOREST LOSS ARE WITHIN 1KM OF AN INDUSTRIAL PALM OIL PLANTATION 
+
+-- Convert raster forest loss data into points
+CREATE TABLE forest_loss_points AS
+SELECT 
+    (ST_PixelAsCentroids(rast)).*
+FROM 
+    forest_loss;
+	
+-- Use ST_DWITHIN to determine how many points of forest loss are within 1km of plantations 
+SELECT 
+    p.gid AS palm_oil_id,
+    COUNT(flp.*) AS forest_loss_points_within_1km
+FROM 
+    smallholder_palmoil AS p,
+    forest_loss_points AS flp
+WHERE 
+    ST_DWithin(p.geom, flp.geom, 1000) -- Within a distance of 1km (1000 meters)
+GROUP BY 
+    p.gid;
+```
+
+ST_Contains was used to figure out how many palm oil plantations were located in each province. ST_DWithin was used to figure out how many points of forest loss are within 1km of plantations. 
+
+After performing spatial queries in .SQL, the tables were transferred to R to create figures: 
+
+```
+# Load libraries 
+library(RPostgres)
+library(ggplot2)
+
+# Connect to the PostgreSQL database
+con <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = "PalmOilProject",
+  host = "localhost",
+  port = 5432,
+  user = " ",
+  password = " "
+)
+
+# Retrieve data from the database 
+data <- dbGetQuery(con, "SELECT * FROM economic_variables")
+school_attendance <- dbGetQuery(con, "SELECT * FROM school_attendance_clean")
+poverty <- dbGetQuery(con, "SELECT * FROM employed_in_poverty_clean")
+electricity <- dbGetQuery(con, "SELECT * FROM household_electricity_clean")
+
+# Merge data into one table 
+merged_data <- merge(data, school_attendance, by = "province")
+merged_data2 <- merge(merged_data, poverty, by = "province")
+merged_data3 <- merge(data, electricity, by = "province")
+
+# create proportion of households without electricity 
+merged_data3$proportion_without_electricity <- merged_data3$without_electricity / merged_data3$total_electricity 
+
+# Create stacked bar chart
+ggplot(data, aes(x = province)) +
+  geom_bar(aes(y = number_of_smallholder_plantations), stat = "identity", fill = "#0072B2", alpha = 0.8) +
+  geom_bar(aes(y = number_of_plantations), stat = "identity", fill = "#D55E00", alpha = 0.8) +
+  labs(x = "Province", y = "Number of Plantations", fill = NULL) +
+  ggtitle("Comparison of Smallholder and Total Plantations by Province") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 14, face = "bold"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(color = "black"))
+
+
+# Create scatterplots
+ggplot(merged_data2, aes(x = number_of_smallholder_plantations, y = percentage_employed)) +
+  geom_point(color = "#0072B2", alpha = 0.8) +  # Set color and transparency
+  geom_smooth(method = "lm", se = FALSE, color = "#D55E00") + 
+  labs(x = "Number of Smallholder Plantations", y = "Percentage of the Poorest 30% that is Employed") +
+  ggtitle("Scatterplot of Employed in Poverty and Number of Smallholder Plantations") +
+  theme_minimal()
+  ```
+
+**Results**
+
+This bar chart shows how many of each type of planation there are in each province. 
+
+
+![bar chart](https://github.com/ruthanneward/PalmOilProject/assets/98286245/7408e6e6-1441-4bec-9476-a9f47b17b888)
+
+
+This scatterplot shows the smallholder plantation variable compared to the percentage of the poorest 30% that is employed.
+
+
+![scatterplot (poverty & employment)](https://github.com/ruthanneward/PalmOilProject/assets/98286245/636d42ca-820f-490a-a40d-ba88afc2c097)
+
+
+This scatterplot shows the smallholder plantation variable compared to school absence.
+
+![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/49b26b57-be14-43f4-a37d-6188e86c3320)
+
+
+This scatterplot shows the smallholder plantation variable compated to percentage of households without electricity. 
+
+![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/e2ab4271-5d28-44c6-b700-a29d5fa3536a)
+
+
+Overall, the results were inconclusive and a bit underwhelming. They did not yield any strong conclusions. 
 
 
 
