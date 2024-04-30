@@ -76,20 +76,22 @@ Number of people aged 16 - 18 not in school:
 
 This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
 
-![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/2e234b82-69e1-459d-92d2-fda012578816)
+![School Attendance](https://github.com/ruthanneward/PalmOilProject/assets/98286245/ecd356ad-83ba-4e60-b00a-95ee8f4bddcb)
 
 
 Percentage of people in the poorest 30% between the ages of 15 and 60 that are employed: 
 
 This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
 
-![employed](https://github.com/ruthanneward/PalmOilProject/assets/98286245/ced521b9-a744-4577-8fdb-56f2f5f825b0)
+![Employed](https://github.com/ruthanneward/PalmOilProject/assets/98286245/65a5e5ed-8ac6-44b3-bd5f-ab417bc10971)
+
 
 Number of households without electricity 2015:
 
 This dataset is sourced from USAID. This data was accessed through ArcGIS online. The data looks like this: 
 
-![electricity](https://github.com/ruthanneward/PalmOilProject/assets/98286245/cff78dc8-4b6a-499f-94ba-2ad4d508b6f4)
+![Electricity](https://github.com/ruthanneward/PalmOilProject/assets/98286245/8ce0a809-8de8-43a3-8b23-d755bea6c6b2)
+
 
 Hansen Forest Loss: 
 
