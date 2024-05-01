@@ -1,6 +1,6 @@
 # Mapping the Impacts of Palm Oil Plantations in Indonesia
 ## Author: Ruthanne Ward
-## Last Updated: April 24, 2024
+## Last Updated: April 30, 2024
 
 **Introduction**
 
@@ -205,8 +205,8 @@ C:\Program Files\PostgreSQL\16\bin>
 -- -C flag adds raster contraints to use that the data is imported in the correct format
 -- -M flag vacuum analyze the raster file after loading
 
-# Create .sql file for forest loss 2001 - 2022
-C:\Program Files\PostgreSQL\16\bin> raster2pgsql -s 4326 -I -C -M "C:\Users\rutha\Downloads\forest_loss_indonesia_test.tif" public.forest_loss > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\forest_loss.sql"
+# Create .sql file for forest loss 2001 - 2022. Use the -t flag to break up the raster into tiles. 
+C:\Program Files\PostgreSQL\16\bin> raster2pgsql -s 4326 -I -C -M -t 100x100 "C:\Users\rutha\Downloads\forest_loss_indonesia_test.tif" public.forest_loss_tiles > "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\forest_loss.sql"
 
 # IMPORT SQL FILES USING COMMAND PROMPT
 -- -U connects to the database as a specific user
@@ -223,7 +223,7 @@ psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark Universit
 
 psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\households_without_electricity.sql"
 
-psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\forest_loss.sql"
+psql -U postgres -d PalmOilProject -f "C:\Users\rutha\OneDrive - Clark University\Documents\SpatialDatabase\PalmOilProject\sql_data_inport_files\forest_loss_tiles.sql"
 ```
 The raster data hwas clipped to a small area of interest before it was inported into SQL becuase of the size of the files. 
 
@@ -389,6 +389,7 @@ After performing spatial queries in .SQL, the tables were transferred to R to cr
 # Load libraries 
 library(RPostgres)
 library(ggplot2)
+library(dplyr)
 
 # Connect to the PostgreSQL database
 con <- dbConnect(
@@ -411,6 +412,10 @@ merged_data <- merge(data, school_attendance, by = "province")
 merged_data2 <- merge(merged_data, poverty, by = "province")
 merged_data3 <- merge(data, electricity, by = "province")
 
+# Filter out rows where either number_of_smallholder_plantations is 0
+filtered_data <- merged_data3 %>%
+  filter(number_of_smallholder_plantations !=0)
+
 # create proportion of households without electricity 
 merged_data3$proportion_without_electricity <- merged_data3$without_electricity / merged_data3$total_electricity 
 
@@ -430,18 +435,18 @@ ggplot(data, aes(x = province)) +
         axis.line = element_line(color = "black"))
 
 
-# Create scatterplots
-ggplot(merged_data2, aes(x = number_of_smallholder_plantations, y = percentage_employed)) +
+# Create scatter plot with filtered data
+ggplot(filtered_data, aes(x = number_of_smallholder_plantations, y = proportion_without_electricity)) +
   geom_point(color = "#0072B2", alpha = 0.8) +  # Set color and transparency
   geom_smooth(method = "lm", se = FALSE, color = "#D55E00") + 
-  labs(x = "Number of Smallholder Plantations", y = "Percentage of the Poorest 30% that is Employed") +
-  ggtitle("Scatterplot of Employed in Poverty and Number of Smallholder Plantations") +
+  labs(x = "Number of Smallholder Plantations", y = "Proportion without Electricity") +
+  ggtitle("Scatterplot of Households Without Electricity and Number of Smallholder Plantations") +
   theme_minimal()
   ```
 
 **Results**
 
-This bar chart shows how many of each type of planation there are in each province. 
+This bar chart shows how many of each type of planation there are in each province. As per the instructors suggestion, the data was filtered so that all provinces with 0 plantations were filtered out. 
 
 
 ![bar chart](https://github.com/ruthanneward/PalmOilProject/assets/98286245/7408e6e6-1441-4bec-9476-a9f47b17b888)
@@ -450,17 +455,19 @@ This bar chart shows how many of each type of planation there are in each provin
 This scatterplot shows the smallholder plantation variable compared to the percentage of the poorest 30% that is employed.
 
 
-![scatterplot (poverty & employment)](https://github.com/ruthanneward/PalmOilProject/assets/98286245/636d42ca-820f-490a-a40d-ba88afc2c097)
+![Poverty and Employment](https://github.com/ruthanneward/PalmOilProject/assets/98286245/9af77777-a4a6-46cd-a7a4-dde2970b5369)
+
 
 
 This scatterplot shows the smallholder plantation variable compared to school absence.
 
-![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/49b26b57-be14-43f4-a37d-6188e86c3320)
+![School Absence](https://github.com/ruthanneward/PalmOilProject/assets/98286245/8045248e-9c8e-408e-8e5b-f4aaaece0be4)
 
 
 This scatterplot shows the smallholder plantation variable compated to percentage of households without electricity. 
 
-![image](https://github.com/ruthanneward/PalmOilProject/assets/98286245/e2ab4271-5d28-44c6-b700-a29d5fa3536a)
+![Without Electricity](https://github.com/ruthanneward/PalmOilProject/assets/98286245/c7f979d0-c573-4b81-9e82-c057fdca7a75)
+
 
 
 Overall, the results were inconclusive and a bit underwhelming. They did not yield any strong conclusions. 
