@@ -359,7 +359,7 @@ SET number_of_planations =
     WHERE he.province = ev.province
 );
 
--- FIND HOW MANY PIXELS OF FOREST LOSS ARE WITHIN 1KM OF AN INDUSTRIAL PALM OIL PLANTATION 
+-- FIND HOW MANY PIXELS OF FOREST LOSS ARE WITHIN 1KM OF AN INDUSTRIAL PALM OIL PLANTATION
 
 -- Convert raster forest loss data into points
 CREATE TABLE forest_loss_points AS
@@ -367,6 +367,18 @@ SELECT
     (ST_PixelAsCentroids(rast)).*
 FROM 
     forest_loss;
+
+-- Create spatial index for smallholder_palmoil table
+CREATE INDEX palm_oil_geom_idx ON smallholder_palmoil USING GIST(geom);
+
+-- Create spatial index for forest_loss_points table
+CREATE INDEX forest_loss_geom_idx ON forest_loss_points USING GIST(geom);
+
+-- Simplify geometry for smallholder_palmoil table
+UPDATE smallholder_palmoil SET geom = ST_Simplify(geom, 0.001);
+
+-- Simplify geometry for forest_loss_points table
+UPDATE forest_loss_points SET geom = ST_Simplify(geom, 0.001);
 	
 -- Use ST_DWITHIN to determine how many points of forest loss are within 1km of plantations 
 SELECT 
@@ -381,7 +393,7 @@ GROUP BY
     p.gid;
 ```
 
-ST_Contains was used to figure out how many palm oil plantations were located in each province. ST_DWithin was used to figure out how many points of forest loss are within 1km of plantations. 
+ST_Contains was used to figure out how many palm oil plantations were located in each province. ST_DWithin was intended to figure out how many points of forest loss are within 1km of plantations. Multiple steps were taken to cut down run time for the ST_DWithin function. First, spatial indexes were created to restructure the geometries into an R-tree to reduce the number of objects that need to be examined. ST_Simplify was used to reduce the complexity of the geometric objects by removing unnecessary verticies or details from the polygons. Unfortunatley, even with these changes, the run time was still over 6 hours and the query did not complete. I hope to revist this project sometime in the future and rework this query to omptimize the performance. 
 
 After performing spatial queries in .SQL, the tables were transferred to R to create figures: 
 
