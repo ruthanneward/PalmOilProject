@@ -1,6 +1,6 @@
 # Mapping the Impacts of Palm Oil Plantations in Indonesia
 ## Author: Ruthanne Ward
-## Last Updated: April 30, 2024
+## Last Updated: May 2, 2024
 
 **Introduction**
 
